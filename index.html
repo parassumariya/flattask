@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flatmate Chore Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="max-w-md mx-auto bg-white min-h-screen shadow-lg relative pb-20">
+        <!-- Header -->
+        <header class="bg-indigo-600 text-white p-4 sticky top-0 z-10 shadow-md">
+            <h1 class="text-xl font-bold text-center"><i class="fas fa-home mr-2"></i>Flatmate Duties</h1>
+            <p class="text-center text-sm text-indigo-200" id="current-date"></p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="p-4 space-y-6">
+            
+            <!-- Assignments Section -->
+            <section id="section-assignments" class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-semibold text-gray-800 border-b-2 border-indigo-500 pb-1 inline-block">Today's Tasks</h2>
+                    <button id="btn-shuffle" class="text-indigo-600 hover:bg-indigo-100 p-2 rounded-full transition" title="Reassign Tasks">
+                        <i class="fas fa-random"></i>
+                    </button>
+                </div>
+                
+                <div id="assignments-list" class="space-y-3">
+                    <!-- Assignments injected here -->
+                    <div class="text-center text-gray-500 text-sm py-4 italic" id="empty-assignments">
+                        Add members and tasks to see assignments.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Members Section -->
+            <section id="section-members" class="space-y-4 hidden">
+                <h2 class="text-lg font-semibold text-gray-800 border-b-2 border-indigo-500 pb-1 inline-block">Flatmates</h2>
+                
+                <form id="form-add-member" class="flex gap-2">
+                    <input type="text" id="input-member" placeholder="Enter name..." class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500" required>
+                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">Add</button>
+                </form>
+
+                <ul id="members-list" class="divide-y divide-gray-200">
+                    <!-- Members injected here -->
+                </ul>
+            </section>
+
+            <!-- Tasks Section -->
+            <section id="section-tasks" class="space-y-4 hidden">
+                <h2 class="text-lg font-semibold text-gray-800 border-b-2 border-indigo-500 pb-1 inline-block">Manage Tasks</h2>
+                
+                <form id="form-add-task" class="flex gap-2">
+                    <input type="text" id="input-task" placeholder="e.g., Kitchen Cleaning" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500" required>
+                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">Add</button>
+                </form>
+
+                <ul id="tasks-list" class="divide-y divide-gray-200">
+                    <!-- Tasks injected here -->
+                </ul>
+            </section>
+            
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="fixed bottom-0 w-full max-w-md bg-white border-t border-gray-200 flex justify-around p-3 text-gray-500 text-xs">
+            <button onclick="switchTab('assignments')" id="tab-assignments" class="flex flex-col items-center text-indigo-600 tab-btn">
+                <i class="fas fa-clipboard-list text-xl mb-1"></i>
+                <span>Today</span>
+            </button>
+            <button onclick="switchTab('members')" id="tab-members" class="flex flex-col items-center hover:text-indigo-600 tab-btn transition">
+                <i class="fas fa-user-friends text-xl mb-1"></i>
+                <span>Members</span>
+            </button>
+            <button onclick="switchTab('tasks')" id="tab-tasks" class="flex flex-col items-center hover:text-indigo-600 tab-btn transition">
+                <i class="fas fa-broom text-xl mb-1"></i>
+                <span>Tasks</span>
+            </button>
+        </nav>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
