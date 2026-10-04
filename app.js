@@ -1,6 +1,7 @@
 // State
 let members = JSON.parse(localStorage.getItem('flatmate_members')) || [];
 let tasks = JSON.parse(localStorage.getItem('flatmate_tasks')) || [];
+// assignments format: { "Paras": [{ name: "Kitchen", status: "pending" }] }
 let assignments = JSON.parse(localStorage.getItem('flatmate_assignments')) || {};
 let lastAssignedDate = localStorage.getItem('flatmate_last_date') || '';
 
@@ -32,18 +33,15 @@ function updateDate() {
 
 // Tab Switching logic
 function switchTab(tabName) {
-    // Hide all sections
     document.getElementById('section-assignments').classList.add('hidden');
     document.getElementById('section-members').classList.add('hidden');
     document.getElementById('section-tasks').classList.add('hidden');
     
-    // Reset tab colors
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('text-indigo-600');
         btn.classList.add('text-gray-500');
     });
 
-    // Show active section and tab
     document.getElementById(`section-${tabName}`).classList.remove('hidden');
     document.getElementById(`tab-${tabName}`).classList.remove('text-gray-500');
     document.getElementById(`tab-${tabName}`).classList.add('text-indigo-600');
@@ -66,7 +64,7 @@ formAddMember.addEventListener('submit', (e) => {
         members.push(name);
         saveData();
         renderMembers();
-        generateAssignments(); // Regenerate assignments when members change
+        generateAssignments(); 
         input.value = '';
     }
 });
@@ -164,10 +162,8 @@ function generateAssignments() {
         return;
     }
 
-    // Simple round-robin based assignment, seeded by date for "randomness" that persists through the day
     const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
     
-    // Shuffle tasks slightly based on day to rotate
     let rotatedTasks = [...tasks];
     for (let i = 0; i < dayOfYear % tasks.length; i++) {
         rotatedTasks.push(rotatedTasks.shift());
@@ -178,7 +174,7 @@ function generateAssignments() {
         if (!assignments[assignee]) {
             assignments[assignee] = [];
         }
-        assignments[assignee].push(task);
+        assignments[assignee].push({ name: task, status: 'pending' });
     });
 
     saveData();
@@ -186,7 +182,6 @@ function generateAssignments() {
 }
 
 btnShuffle.addEventListener('click', () => {
-    // Force immediate random shuffle
     assignments = {};
     if (members.length === 0 || tasks.length === 0) return;
 
@@ -196,11 +191,20 @@ btnShuffle.addEventListener('click', () => {
         if (!assignments[assignee]) {
             assignments[assignee] = [];
         }
-        assignments[assignee].push(task);
+        assignments[assignee].push({ name: task, status: 'pending' });
     });
     saveData();
     renderAssignments();
 });
+
+// Task Actions
+function setTaskStatus(member, taskIndex, status) {
+    if (assignments[member] && assignments[member][taskIndex]) {
+        assignments[member][taskIndex].status = status;
+        saveData();
+        renderAssignments();
+    }
+}
 
 function renderAssignments() {
     assignmentsList.innerHTML = '';
@@ -214,9 +218,35 @@ function renderAssignments() {
 
     Object.keys(assignments).forEach(member => {
         const card = document.createElement('div');
-        card.className = 'bg-gray-50 border border-gray-200 rounded-xl p-4 shadow-sm';
+        card.className = 'bg-white border border-gray-200 rounded-xl p-4 shadow-sm';
         
-        const memberTasks = assignments[member].map(t => `<li class="flex items-center gap-2 text-gray-700"><i class="fas fa-circle text-[8px] text-indigo-500"></i>${t}</li>`).join('');
+        const tasksHTML = assignments[member].map((t, i) => {
+            let statusBadge = '';
+            let actionBtns = '';
+            
+            if (t.status === 'done') {
+                statusBadge = '<span class="text-xs font-semibold px-2 py-1 bg-green-100 text-green-700 rounded-full">Done</span>';
+            } else if (t.status === 'skipped') {
+                statusBadge = '<span class="text-xs font-semibold px-2 py-1 bg-red-100 text-red-700 rounded-full">Skipped</span>';
+            } else {
+                actionBtns = `
+                    <div class="flex gap-2">
+                        <button onclick="setTaskStatus('${member}', ${i}, 'done')" class="text-xs bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded transition"><i class="fas fa-check"></i></button>
+                        <button onclick="setTaskStatus('${member}', ${i}, 'skipped')" class="text-xs bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded transition"><i class="fas fa-times"></i> Skip</button>
+                    </div>
+                `;
+            }
+
+            return `
+            <li class="flex flex-col gap-2 py-2 border-b border-gray-100 last:border-0">
+                <div class="flex justify-between items-center w-full">
+                    <span class="text-gray-700 font-medium ${t.status === 'done' ? 'line-through text-gray-400' : ''}">${t.name}</span>
+                    ${statusBadge}
+                </div>
+                ${actionBtns ? `<div class="flex justify-end">${actionBtns}</div>` : ''}
+            </li>
+            `;
+        }).join('');
 
         card.innerHTML = `
             <div class="flex items-center gap-3 mb-3 border-b border-gray-200 pb-2">
@@ -226,7 +256,7 @@ function renderAssignments() {
                 <h3 class="font-bold text-gray-800 text-lg">${member}</h3>
             </div>
             <ul class="space-y-1 ml-1 text-sm font-medium">
-                ${memberTasks}
+                ${tasksHTML}
             </ul>
         `;
         assignmentsList.appendChild(card);
