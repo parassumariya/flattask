@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitchen Cleaning Roster</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Kitchen Cleaning</h1>
+            <p>Duty Roster • October 2026</p>
+        </header>
+
+        <section class="checklist">
+            <h2>Kitchen Cleaning Checklist</h2>
+            <ul>
+                <li>Wipe kitchen counters and dining surfaces</li>
+                <li>Clean the stove / cooking area and sink</li>
+                <li>Wash and put away used dishes</li>
+                <li>Sweep and mop the kitchen floor</li>
+                <li>Put waste in the correct bin</li>
+            </ul>
+        </section>
+
+        <section class="controls">
+            <div class="add-user">
+                <h3>Add New Person</h3>
+                <input type="text" id="new-user-name" placeholder="Enter name">
+                <button onclick="addUser()">Add Person</button>
+            </div>
+            <div class="notification-area">
+                <p>Status updates live automatically!</p>
+            </div>
+        </section>
+
+        <section class="roster">
+            <h2>Daily Assignments | 4–31 October</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Day</th>
+                        <th>Assigned Person</th>
+                        <th>Done</th>
+                    </tr>
+                </thead>
+                <tbody id="schedule-body">
+                    <!-- Loaded dynamically -->
+                </tbody>
+            </table>
+        </section>
+    </div>
+    
+    <!-- Audio notification element -->
+    <audio id="notify-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-software-interface-start-2574.mp3"></audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
